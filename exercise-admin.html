@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Hagius Active Journey - Exercise Management" />
+  <title>Hagius Exercise Manager</title>
+  
+  <style>
+    /* Match main app styling */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    :root {
+      --primary-color: #BCBCBC;
+      --secondary-color: #8D8D8D;
+      --white-transparent-light: rgba(255, 255, 255, 0.2);
+      --white-transparent-medium: rgba(255, 255, 255, 0.3);
+      --white-transparent-bright: rgba(255, 255, 255, 0.4);
+      --white-transparent-brighter: rgba(255, 255, 255, 0.5);
+      --border-radius: 0px;
+      --transition-speed: 0.3s;
+      --safe-bottom: calc(20px + env(safe-area-inset-bottom));
+      --safe-top: calc(20px + env(safe-area-inset-top));
+      --button-spacing: 4px;
+      --element-height: 60px;
+      --font-size-button: 0.4;
+      --element-padding: 15px;
+    }
+    
+    body {
+      font-family: Helvetica, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      font-weight: bold;
+      background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+      color: #fff;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0 0 var(--safe-bottom) 0;
+      padding-top: env(safe-area-inset-top);
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    
+    .header {
+      text-align: center;
+      padding: 20px 0;
+      margin-bottom: 20px;
+    }
+    
+    .logo {
+      max-width: 180px;
+      height: auto;
+      display: block;
+      margin: 0 auto 15px;
+    }
+    
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    
+    .header p {
+      font-size: 1rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .admin-container {
+      max-width: 1000px;
+      margin: 0 auto 30px;
+      padding: 0 20px;
+    }
+    
+    .control-panel {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      margin-bottom: var(--button-spacing);
+      padding: 0;
+      gap: var(--button-spacing);
+    }
+    
+    .btn {
+      background: var(--white-transparent-light);
+      border: none;
+      flex: 1;
+      font-size: calc(var(--element-height) * var(--font-size-button));
+      font-weight: bold;
+      color: #fff;
+      cursor: pointer;
+      transition: background var(--transition-speed);
+      height: var(--element-height);
+      line-height: var(--element-height);
+      padding: 0 var(--element-padding);
+      text-transform: uppercase;
+      margin: 0;
+      min-width: 0;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+    }
+    
+    .btn:hover {
+      background: var(--white-transparent-bright);
+    }
+    
+    .btn-danger:hover {
+      background: rgba(255, 99, 71, 0.5);
+    }
+    
+    .exercise-table-container {
+      background: var(--white-transparent-light);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      width: 100%;
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+    
+    .exercise-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .exercise-table th,
+    .exercise-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid var(--white-transparent-light);
+    }
+    
+    .exercise-table th {
+      background: var(--white-transparent-medium);
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+    }
+    
+    .exercise-table tr:hover {
+      background: var(--white-transparent-medium);
+    }
+    
+    .image-preview {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      background: #333;
+    }
+    
+    .action-cell {
+      white-space: nowrap;
+    }
+    
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 30px;
+      z-index: 1001;
+      opacity: 0;
+      transition: transform 0.3s, opacity 0.3s;
+      text-align: center;
+      max-width: 80%;
+    }
+    
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    
+    /* Modal styling */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+      padding: 20px;
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .modal-header h2 {
+      font-size: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      color: white;
+      cursor: pointer;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+    }
+    
+    input[type="text"],
+    input[type="url"],
+    textarea,
+    select {
+      width: 100%;
+      height: var(--element-height);
+      background: var(--white-transparent-light);
+      border: none;
+      padding: 0 var(--element-padding);
+      color: white;
+      font-size: calc(var(--element-height) * var(--font-size-button));
+      font-family: inherit;
+      font-weight: bold;
+    }
+    
+    textarea {
+      height: 120px;
+      padding: 15px;
+      resize: vertical;
+    }
+    
+    ::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: var(--element-height);
+      background: var(--white-transparent-light);
+      padding: 0 var(--element-padding);
+    }
+    
+    input[type="checkbox"] {
+      width: 24px;
+      height: 24px;
+    }
+    
+    .checkbox-group label {
+      margin: 0;
+      line-height: var(--element-height);
+    }
+    
+    .error-message {
+      color: white;
+      background: rgba(255, 99, 71, 0.3);
+      padding: 10px 15px;
+      margin-bottom: 15px;
+      display: none;
+    }
+    
+    .success-message {
+      color: white;
+      background: rgba(60, 179, 113, 0.3);
+      padding: 10px 15px;
+      margin-bottom: 15px;
+      display: none;
+    }
+    
+    .image-preview-container {
+      margin-top: 10px;
+      text-align: center;
+    }
+    
+    .form-preview-image {
+      max-width: 100%;
+      max-height: 200px;
+      background: var(--white-transparent-light);
+      padding: 5px;
+    }
+    
+    .import-export {
+      background: var(--white-transparent-light);
+      padding: 20px;
+      margin-top: 30px;
+    }
+    
+    .import-export h3 {
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      font-size: 1.2rem;
+    }
+    
+    .import-export p {
+      margin-bottom: 15px;
+      opacity: 0.9;
+    }
+    
+    #jsonImport {
+      width: 100%;
+      height: 150px;
+      margin-bottom: 10px;
+      padding: 15px;
+      background: var(--white-transparent-medium);
+      color: white;
+      border: none;
+      font-family: monospace;
+      font-size: 0.9rem;
+      resize: vertical;
+    }
+    
+    .bottom-navigation {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--primary-color);
+      display: flex;
+      justify-content: space-between;
+      z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    
+    .bottom-navigation .btn {
+      flex: 1;
+      border-radius: 0;
+    }
+    
+    @media (min-width: 768px) {
+      :root {
+        --element-height: 70px;
+      }
+      
+      .logo {
+        max-width: 220px;
+      }
+      
+      h1 {
+        font-size: 2.2rem;
+      }
+      
+      .header p {
+        font-size: 1.1rem;
+      }
+      
+      .import-export {
+        padding: 30px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .action-cell .btn {
+        padding: 0 10px;
+      }
+      
+      .exercise-table th,
+      .exercise-table td {
+        padding: 10px;
+      }
+      
+      .image-preview {
+        width: 50px;
+        height: 50px;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      :root {
+        --element-height: 50px;
+      }
+      
+      .logo {
+        max-width: 160px;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      .header p {
+        font-size: 0.9rem;
+      }
+      
+      .btn {
+        font-size: 0.8rem;
+      }
+      
+      .import-export {
+        padding: 15px;
+      }
+      
+      .modal-content {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="logo.png" alt="Hagius" class="logo">
+    <h1>Exercise Manager</h1>
+    <p>Add, edit, and manage exercises for the Active Journey app</p>
+  </div>
+  
+  <div class="admin-container">
+    <div class="control-panel">
+      <button id="addExerciseBtn" class="btn">Add New Exercise</button>
+      <button id="exportBtn" class="btn">Export Exercises</button>
+      <button id="resetDefaultBtn" class="btn btn-danger">Reset to Default</button>
+    </div>
+    
+    <div id="errorContainer" class="error-message"></div>
+    <div id="successContainer" class="success-message"></div>
+    
+    <div class="exercise-table-container">
+      <table class="exercise-table">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Unilateral</th>
+            <th>Frequency</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="exerciseTableBody">
+          <!-- Exercise rows will be added here dynamically -->
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="import-export">
+      <h3>Import Exercises</h3>
+      <p>Paste a valid JSON array of exercises below and click Import</p>
+      <textarea id="jsonImport" placeholder='[{"name": "Exercise Name", "description": "Description", "unilateral": false, "image": "image-url.gif", "probability": 1}]'></textarea>
+      <button id="importBtn" class="btn">Import Exercises</button>
+    </div>
+  </div>
+  
+  <!-- Add/Edit Exercise Modal -->
+  <div id="exerciseModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add New Exercise</h2>
+        <button class="close-modal" id="closeModal">&times;</button>
+      </div>
+      
+      <div id="modalError" class="error-message"></div>
+      
+      <form id="exerciseForm">
+        <input type="hidden" id="exerciseId" value="">
+        
+        <div class="form-group">
+          <label for="exerciseName">Exercise Name *</label>
+          <input type="text" id="exerciseName" required placeholder="Ex: Single-Leg Balance w/ Toe Taps">
+        </div>
+        
+        <div class="form-group">
+          <label for="exerciseDescription">Description *</label>
+          <textarea id="exerciseDescription" required placeholder="Describe the benefits or focus of this exercise"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input type="checkbox" id="exerciseUnilateral">
+            <label for="exerciseUnilateral">Unilateral (requires left/right sides)</label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="exerciseImage">Image URL *</label>
+          <input type="url" id="exerciseImage" required placeholder="https://example.com/image.gif">
+          <div class="image-preview-container">
+            <img id="imagePreview" class="form-preview-image" src="placeholder.png" alt="Preview">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="exerciseProbability">Frequency</label>
+          <select id="exerciseProbability">
+            <option value="0.5">Less Frequent</option>
+            <option value="1" selected>Normal</option>
+            <option value="2">More Frequent</option>
+          </select>
+        </div>
+        
+        <button type="submit" class="btn">Save Exercise</button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Confirm Delete</h2>
+        <button class="close-modal" id="closeDeleteModal">&times;</button>
+      </div>
+      
+      <p>Are you sure you want to delete the exercise: <strong id="deleteExerciseName"></strong>?</p>
+      <p>This action cannot be undone.</p>
+      
+      <div class="control-panel" style="margin-top: 20px;">
+        <button id="cancelDeleteBtn" class="btn">Cancel</button>
+        <button id="confirmDeleteBtn" class="btn btn-danger">Delete Exercise</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Reset Confirmation Modal -->
+  <div id="resetModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Confirm Reset</h2>
+        <button class="close-modal" id="closeResetModal">&times;</button>
+      </div>
+      
+      <p>Are you sure you want to reset to the default exercise list?</p>
+      <p>This will delete all custom exercises and restore the original exercises.</p>
+      
+      <div class="control-panel" style="margin-top: 20px;">
+        <button id="cancelResetBtn" class="btn">Cancel</button>
+        <button id="confirmResetBtn" class="btn btn-danger">Reset to Default</button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="toast" class="toast"></div>
+  
+  <div class="bottom-navigation">
+    <a href="index.html" class="btn">Back to App</a>
+  </div>
+  
+  <script src="exercise-admin.js"></script>
+</body>
+</html>

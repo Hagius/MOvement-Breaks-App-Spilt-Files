@@ -1,0 +1,58 @@
+[
+  {
+    "name": "Single-Leg Balance w/ Toe Taps",
+    "description": "Improve balance & ankle stability",
+    "unilateral": true,
+    "image": "https://images.ctfassets.net/drib7o8rcbyf/2YbdcRt7GzT1ZkLZ0336SY/f89b8a972eb647cf8feee85106fb848e/02-min.gif",
+    "probability": 1
+  },
+  {
+    "name": "Standing Hip Circles",
+    "description": "Loosen tight hips & improve joint mobility",
+    "unilateral": false,
+    "image": "https://furthermore-cdn.equinox.com/2016/10/long-weekend-workout-warmup/warmup02.gif",
+    "probability": 1
+  },
+  {
+    "name": "Neck Tilts & Rotations",
+    "description": "Release neck tension from prolonged sitting",
+    "unilateral": false,
+    "image": "https://furthermore-cdn.equinox.com/2016/10/long-weekend-workout-warmup/warmup01.gif",
+    "probability": 1
+  },
+  {
+    "name": "Shoulder Rolls",
+    "description": "Reduce shoulder stiffness & enhance posture",
+    "unilateral": false,
+    "image": "https://furthermore-cdn.equinox.com/2016/10/long-weekend-workout-warmup/warmup01.gif",
+    "probability": 1
+  },
+  {
+    "name": "Standing Figure-4 Stretch",
+    "description": "Open up hips & glutes to counter desk posture",
+    "unilateral": true,
+    "image": "https://furthermore-cdn.equinox.com/2016/10/long-weekend-workout-warmup/warmup01.gif",
+    "probability": 1
+  },
+  {
+    "name": "Wall Angels",
+    "description": "Promote better shoulder alignment & mobility",
+    "unilateral": false,
+    "image": "https://furthermore-cdn.equinox.com/2016/10/long-weekend-workout-warmup/warmup01.gif",
+    "probability": 1
+  },
+  {
+    "name": "Thoracic Extension",
+    "description": "Relieve mid-back tightness & improve upright posture",
+    "unilateral": false,
+    "image": "https://furthermore-cdn.equinox.com/2016/10/long-weekend-workout-warmup/warmup01.gif",
+    "probability": 1
+  },
+  {
+    "name": "Standing Lateral Leg Raises",
+    "description": "Strengthen hip abductors & improve balance",
+    "unilateral": true,
+    "image": "https://images.ctfassets.net/drib7o8rcbyf/1AWNDkRP4J5Tpu7aZrrh2A/c5778130368c9fcf516a12de96591058/mobile.gif",
+    "probability": 1
+  }
+]

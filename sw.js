@@ -28,7 +28,11 @@ const ASSETS_TO_CACHE = [
   './icons/apple-splash-1242-2688.jpg',
   './icons/apple-splash-1536-2048.jpg',
   './icons/apple-splash-1668-2388.jpg',
-  './icons/apple-splash-2048-2732.jpg'
+  './icons/apple-splash-2048-2732.jpg',
+	'./exercises.json',
+'./exercise-admin.html',
+'./exercise-admin.js',
+'./admin-access.html',
 ];
 
 // Install event - cache all static assets

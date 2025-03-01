@@ -34,6 +34,10 @@
   //   MAX_EXERCISES: 2         // Fewer exercises for testing
   // };
   
+  // Exercise Database constants
+  const EXERCISES_STORAGE_KEY = 'hagius_exercises';
+  const DEFAULT_EXERCISES_URL = 'exercises.json';
+  
   // APP STATE
   const state = {
     // Timer state
@@ -64,65 +68,67 @@
     hasInteracted: false
   };
   
-  // Exercise pool (8 total)
-  const exercisesPool = [
-    {
-      name: "Single-Leg Balance w/ Toe Taps",
-      description: "Improve balance & ankle stability",
-      unilateral: true,
-      image: "https://images.ctfassets.net/drib7o8rcbyf/2YbdcRt7GzT1ZkLZ0336SY/f89b8a972eb647cf8feee85106fb848e/02-min.gif",
-      probability: 1
-    },
-    {
-      name: "Standing Hip Circles",
-      description: "Loosen tight hips & improve joint mobility",
-      unilateral: false,
-      image: "https://furthermore-cdn.equinox.com/2016/10/long-weekend-workout-warmup/warmup02.gif",
-      probability: 1
-    },
-    {
-      name: "Neck Tilts & Rotations",
-      description: "Release neck tension from prolonged sitting",
-      unilateral: false,
-      image: "https://furthermore-cdn.equinox.com/2016/10/long-weekend-workout-warmup/warmup01.gif",
-      probability: 1
-    },
-    {
-      name: "Shoulder Rolls",
-      description: "Reduce shoulder stiffness & enhance posture",
-      unilateral: false,
-      image: "https://furthermore-cdn.equinox.com/2016/10/long-weekend-workout-warmup/warmup01.gif",
-      probability: 1
-    },
-    {
-      name: "Standing Figure-4 Stretch",
-      description: "Open up hips & glutes to counter desk posture",
-      unilateral: true,
-      image: "https://furthermore-cdn.equinox.com/2016/10/long-weekend-workout-warmup/warmup01.gif",
-      probability: 1
-    },
-    {
-      name: "Wall Angels",
-      description: "Promote better shoulder alignment & mobility",
-      unilateral: false,
-      image: "https://furthermore-cdn.equinox.com/2016/10/long-weekend-workout-warmup/warmup01.gif",
-      probability: 1
-    },
-    {
-      name: "Thoracic Extension",
-      description: "Relieve mid-back tightness & improve upright posture",
-      unilateral: false,
-      image: "https://furthermore-cdn.equinox.com/2016/10/long-weekend-workout-warmup/warmup01.gif",
-      probability: 1
-    },
-    {
-      name: "Standing Lateral Leg Raises",
-      description: "Strengthen hip abductors & improve balance",
-      unilateral: true,
-      image: "https://images.ctfassets.net/drib7o8rcbyf/1AWNDkRP4J5Tpu7aZrrh2A/c5778130368c9fcf516a12de96591058/mobile.gif",
-      probability: 1
+  // Exercise pool - will be populated from localStorage or default JSON
+  let exercisesPool = [];
+  
+  // Function to load exercises from localStorage or default JSON
+  async function loadExercises() {
+    try {
+      // First try to load from localStorage
+      const savedExercises = localStorage.getItem(EXERCISES_STORAGE_KEY);
+      
+      if (savedExercises) {
+        exercisesPool = JSON.parse(savedExercises);
+        console.log(`Loaded ${exercisesPool.length} exercises from localStorage`);
+        return;
+      }
+      
+      // If nothing in localStorage, load from default JSON
+      console.log('No exercises in localStorage, loading defaults...');
+      const response = await fetch(DEFAULT_EXERCISES_URL);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const defaultExercises = await response.json();
+      exercisesPool = defaultExercises;
+      
+      // Save defaults to localStorage for future use
+      localStorage.setItem(EXERCISES_STORAGE_KEY, JSON.stringify(exercisesPool));
+      console.log(`Loaded ${exercisesPool.length} default exercises`);
+    } catch (error) {
+      console.error('Error loading exercises:', error);
+      
+      // Use hardcoded exercises as fallback if array is empty
+      if (!exercisesPool || exercisesPool.length === 0) {
+        console.log('Using fallback hardcoded exercises due to loading error');
+        exercisesPool = [
+          {
+            name: "Single-Leg Balance w/ Toe Taps",
+            description: "Improve balance & ankle stability",
+            unilateral: true,
+            image: "https://images.ctfassets.net/drib7o8rcbyf/2YbdcRt7GzT1ZkLZ0336SY/f89b8a972eb647cf8feee85106fb848e/02-min.gif",
+            probability: 1
+          },
+          {
+            name: "Standing Hip Circles",
+            description: "Loosen tight hips & improve joint mobility",
+            unilateral: false,
+            image: "https://furthermore-cdn.equinox.com/2016/10/long-weekend-workout-warmup/warmup02.gif",
+            probability: 1
+          },
+          {
+            name: "Neck Tilts & Rotations",
+            description: "Release neck tension from prolonged sitting",
+            unilateral: false,
+            image: "https://furthermore-cdn.equinox.com/2016/10/long-weekend-workout-warmup/warmup01.gif",
+            probability: 1
+          }
+        ];
+      }
     }
-  ];
+  }
   
   // UTILITY FUNCTIONS
   const utils = {
@@ -477,6 +483,9 @@
       
       // Also update the stored tag
       state.completedExercises[idx].tag = nextTag;
+      
+      // Save updated exercise preferences to localStorage
+      localStorage.setItem(EXERCISES_STORAGE_KEY, JSON.stringify(exercisesPool));
     },
     
     showKnowledgeSection: () => {
@@ -1051,8 +1060,9 @@
   }
   
   // INITIALIZATION
-  function init() {
+  async function init() {
     cacheElements();
+    await loadExercises(); // Load exercises first
     initializeAudio();
     preloadImages();
     attachEventListeners();
@@ -1063,8 +1073,14 @@
   
   // Initialize the app when DOM is ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', () => {
+      init().catch(error => {
+        console.error('Initialization error:', error);
+      });
+    });
   } else {
-    init();
+    init().catch(error => {
+      console.error('Initialization error:', error);
+    });
   }
 })();
