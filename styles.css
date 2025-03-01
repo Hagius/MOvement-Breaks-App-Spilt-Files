@@ -431,12 +431,8 @@ body {
 
 .exercise-text-container {
   width: 100%;
-  margin-top: 0;
-  margin-bottom: var(--vru-xlarge);
-  flex: 0 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  text-align: center;
+  margin: 0 auto;
 }
 
 #exerciseTitle {
@@ -461,8 +457,9 @@ body {
 .exercise-active #exerciseTitle,
 .exercise-active #exerciseSubtitle {
   color: white;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9); /* Enhanced text shadow for readability */
+  text-shadow: none; /* Properly remove shadow */
 }
+
 
 .exercise-progress-container {
   width: 100%;
@@ -504,9 +501,21 @@ body {
   background: rgba(0, 0, 0, 0.3); /* Light background for visibility */
 }
 
-/* ADDED: Make sure exercise buttons are always visible */
+/* Explicitly ensure that skip and pause buttons can be seen with proper styling */
 .exercise-button {
-  display: block !important; /* Force display */
+  background: var(--white-transparent-light);
+  border: none;
+  flex: 1;
+  font-size: calc(var(--element-height) * var(--font-size-button));
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+  transition: background var(--transition-speed);
+  height: var(--element-height);
+  line-height: var(--element-height);
+  padding: 0 var(--element-padding);
+  text-transform: uppercase;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Finish Section */
@@ -1025,12 +1034,22 @@ body {
 
 /* Fullscreen exercise background styles */
 .exercise-active #exerciseSection {
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  max-width: 100%;
-  width: 100%;
-  padding: 0;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  z-index: 0 !important;
+  overflow: hidden !important;
 }
 
 /* Hide the original image container when in active mode */
@@ -1040,25 +1059,34 @@ body {
 
 /* Style the content container for readability - MODIFIED (removed background) */
 .exercise-active .exercise-content-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 600px;
+  text-align: center;
+  background: transparent;
   padding: 20px;
-  border-radius: 8px;
-  max-width: 80%;
-  margin: 25vh auto auto auto;
-  z-index: 10;
+  margin: 0 auto;
+  z-index: 10; /* Ensure content is above background image */
 }
 
 /* Ensure text is visible against background - MODIFIED (enhanced shadow) */
 .exercise-active #exerciseTitle,
 .exercise-active #exerciseSubtitle {
   color: white;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9); /* Enhanced shadow */
+  text-shadow: none; /* Properly remove shadow */
 }
 
 /* Make sure controls are visible - MODIFIED (increased z-index) */
-.exercise-active .button-container,
-.exercise-active .progress-container {
-  z-index: 100;
-  background: rgba(0, 0, 0, 0.3);
+.exercise-active .button-container {
+  z-index: 100; /* Higher z-index to ensure visibility */
+  position: fixed;
+  bottom: env(safe-area-inset-bottom);
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.3); /* Semi-transparent background for better visibility */
 }
 
 /* Mobile adjustments */
@@ -1074,4 +1102,59 @@ body {
   .exercise-active .exercise-content-container {
     margin-top: 15vh;
   }
+}
+/* Add this to the end of your styles.css file */
+
+/* Fullscreen exercise background element */
+#exercise-fullscreen-bg {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 0 !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Make sure the exercise section is transparent */
+.exercise-active #exerciseSection {
+  background: transparent !important;
+  z-index: 1 !important;
+  position: relative !important;
+}
+
+/* Hide the display container when in active mode */
+.exercise-active .exercise-display {
+  display: none !important;
+}
+
+/* Ensure text is visible against the background without shadows */
+.exercise-active #exerciseTitle,
+.exercise-active #exerciseSubtitle {
+  color: white !important;
+  text-shadow: none !important;
+}
+
+/* Ensure buttons are visible above the background */
+.exercise-active .button-container, 
+.exercise-active .progress-container {
+  position: fixed !important;
+  z-index: 10 !important;
+  background: rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Ensure exercise content is positioned correctly */
+.exercise-active .exercise-content-container {
+  position: relative !important;
+  z-index: 5 !important;
+  background: transparent !important;
+}
+
+/* Make the buttons only display when needed */
+.exercise-button {
+  display: none;
 }

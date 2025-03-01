@@ -969,8 +969,19 @@
     state.elements.exerciseTitle.textContent = fullName;
     state.elements.exerciseSubtitle.textContent = current.description;
     
-    // NEW: Set the background image on the exerciseSection element
-    state.elements.exerciseSection.style.backgroundImage = `url('${current.image}')`;
+    // Create or update a dedicated fullscreen background element
+    let bgElement = document.getElementById('exercise-fullscreen-bg');
+    if (!bgElement) {
+      bgElement = document.createElement('div');
+      bgElement.id = 'exercise-fullscreen-bg';
+      document.body.appendChild(bgElement);
+    }
+
+    // Set the background image
+    bgElement.style.backgroundImage = `url('${current.image}')`;
+    
+    // Also ensure the exercise section has a transparent background
+    state.elements.exerciseSection.style.background = 'transparent';
     
     // Set up timer
     state.exerciseRemaining = DEFAULTS.EXERCISE_DURATION;
@@ -1034,6 +1045,12 @@
     
     // Show completion vibration
     utils.triggerHaptic(HAPTIC_PATTERNS.sessionComplete);
+    
+    // Remove the background element when finishing exercises
+    const bgElement = document.getElementById('exercise-fullscreen-bg');
+    if (bgElement) {
+      bgElement.remove();
+    }
     
     // Switch to finish page
     utils.showPage('finishSection');
