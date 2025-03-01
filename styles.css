@@ -55,6 +55,15 @@ body {
   padding-right: env(safe-area-inset-right);
   overflow: hidden;
   touch-action: manipulation; /* Optimize for touch to reduce delay */
+  transition: background-image 0.3s ease; /* Added for background transition */
+}
+
+/* Added for exercise background */
+.exercise-background-active {
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  transition: background-image 0.3s ease;
 }
 
 /* Loading Animation */
@@ -163,7 +172,7 @@ body {
   left: 0;
   right: 0;
   width: 100%;
-  z-index: 100;
+  z-index: 15; /* Updated consistent z-index */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -297,6 +306,8 @@ body {
   transition: background var(--transition-speed);
   position: relative;
   -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 
 .timer-progress-container:hover {
@@ -326,7 +337,7 @@ body {
   z-index: 2;
 }
 
-/* Exercise Section - UPDATED */
+/* Exercise Section - UPDATED & SIMPLIFIED */
 #exerciseSection {
   display: flex;
   flex-direction: column;
@@ -338,15 +349,11 @@ body {
   margin: 0 auto;
   padding: 0 20px;
   box-sizing: border-box;
-  position: relative; /* Added position relative */
+  position: relative;
+  z-index: 5; /* Updated consistent z-index */
 }
 
-.exercise-active #exerciseSection {
-  max-width: 100%; /* Remove max-width limitation when active */
-  padding: 0; /* Remove padding when fullscreen */
-}
-
-/* Flexible container for exercise content - UPDATED */
+/* Simplified exercise content container */
 .exercise-content-container {
   display: flex;
   flex-direction: column;
@@ -356,30 +363,34 @@ body {
   margin-top: calc(var(--vru-xlarge) * 3);
   margin-bottom: auto;
   flex: 1;
-  position: relative; /* Added position relative */
-  z-index: 5; /* Ensure content is above the background image */
+  position: relative;
+  z-index: 10; /* Updated consistent z-index */
 }
 
-/* MODIFIED: Removed dark background behind exercise title */
+/* SIMPLIFIED exercise active state */
 .exercise-active .exercise-content-container {
-  margin-top: 25vh; /* Center content vertically in active state */
-  background: transparent; /* Changed from rgba(0, 0, 0, 0.5) to transparent */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 600px;
+  text-align: center;
+  background: transparent;
   padding: 20px;
-  border-radius: 8px;
-  max-width: 90%;
-  z-index: 10; /* Ensure content stays on top */
+  margin: 0;
+  z-index: 10;
 }
 
-/* Exercise display container - UPDATED */
+/* Exercise display container */
 .exercise-display {
   position: relative;
   width: 100%;
   max-width: 300px;
-  aspect-ratio: 3/4; /* Taller than wide (3:4 ratio) */
+  aspect-ratio: 3/4;
   background: var(--white-transparent-light);
-  margin: 0 auto var(--vru-large); /* Use golden ratio spacing below */
+  margin: 0 auto var(--vru-large);
   flex: 0 1 auto;
-  /* Maximum height is proportional to viewport using rule of thirds */
   max-height: 38vh;
   min-height: 200px;
   display: flex;
@@ -389,32 +400,15 @@ body {
   border-radius: 4px;
 }
 
-/* Updated for fullscreen in active state */
+/* Hide exercise display when in active state (using body background instead) */
 .exercise-active .exercise-display {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  max-width: 100%;
-  max-height: 100%;
-  min-height: 100%;
-  margin: 0;
-  padding: 0;
-  border-radius: 0;
-  z-index: 1; /* Place behind content but above other elements */
-  background: none;
+  display: none;
 }
 
 /* Apply 4:3 ratio when screen is 1:1 or wider */
 @media (min-aspect-ratio: 1/1) {
   .exercise-display {
-    aspect-ratio: 4/3; /* Wider than tall (4:3 ratio) */
-  }
-  
-  /* Override in active state to maintain fullscreen */
-  .exercise-active .exercise-display {
-    aspect-ratio: auto;
+    aspect-ratio: 4/3;
   }
 }
 
@@ -423,10 +417,6 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
-}
-
-.exercise-active #exerciseImage {
-  object-position: center; /* Center the image */
 }
 
 .exercise-text-container {
@@ -453,13 +443,22 @@ body {
   max-width: 90%;
 }
 
-/* MODIFIED: Enhanced text shadow for better readability without background */
+/* Improved text styles for exercise mode */
 .exercise-active #exerciseTitle,
 .exercise-active #exerciseSubtitle {
   color: white;
-  text-shadow: none; /* Properly remove shadow */
 }
 
+.exercise-active #exerciseTitle {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+}
+
+.exercise-active #exerciseSubtitle {
+  font-size: 1.2rem;
+  line-height: 1.4;
+  opacity: 0.9;
+}
 
 .exercise-progress-container {
   width: 100%;
@@ -468,6 +467,8 @@ body {
   overflow: hidden;
   position: relative;
   -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 
 .exercise-progress-bar {
@@ -493,15 +494,15 @@ body {
   z-index: 2;
 }
 
-/* MODIFIED: Ensure button and progress containers are visible */
+/* SIMPLIFIED: Button containers with consistent z-index */
 .exercise-active .button-container,
 .exercise-active .progress-container {
-  z-index: 100; /* Increased z-index to ensure visibility */
-  position: fixed; /* Ensure proper positioning */
-  background: rgba(0, 0, 0, 0.3); /* Light background for visibility */
+  z-index: 20; /* Updated consistent z-index */
+  position: fixed;
+  background: transparent;
 }
 
-/* Explicitly ensure that skip and pause buttons can be seen with proper styling */
+/* Exercise button styling */
 .exercise-button {
   background: var(--white-transparent-light);
   border: none;
@@ -516,6 +517,8 @@ body {
   padding: 0 var(--element-padding);
   text-transform: uppercase;
   -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 
 /* Finish Section */
@@ -634,7 +637,7 @@ body {
   left: 0;
   right: 0;
   display: flex;
-  z-index: 10;
+  z-index: 20; /* Updated consistent z-index */
   padding: 0;
   gap: var(--button-spacing);
 }
@@ -658,6 +661,8 @@ body {
   white-space: nowrap;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 
 .bottom-button:hover {
@@ -878,12 +883,6 @@ body {
   .exercise-content-container {
     margin-top: calc(var(--vru-xlarge) * 3.5); /* Greater spacing for larger screens */
   }
-  
-  /* Ensure exercise display fills screen in active state even on large screens */
-  .exercise-active .exercise-display {
-    max-width: 100%;
-    max-height: 100%;
-  }
 }
 
 @media (max-width: 480px) {
@@ -902,12 +901,6 @@ body {
   #exerciseSubtitle { font-size: 0.9rem; }
   .exercise-content-container {
     margin-top: calc(var(--vru-xlarge) * 2.5); /* Less spacing for mobile */
-  }
-  
-  /* Adjust content position on small screens */
-  .exercise-active .exercise-content-container {
-    margin-top: 20vh;
-    padding: 15px;
   }
 }
 
@@ -943,11 +936,6 @@ body {
   .exercise-content-container {
     margin-top: calc(var(--vru-xlarge) * 2); /* Reduced spacing for short screens */
   }
-  
-  /* Adjust content position on short screens */
-  .exercise-active .exercise-content-container {
-    margin-top: 15vh;
-  }
 }
 
 /* Fallback for browsers that don't support aspect-ratio */
@@ -963,13 +951,6 @@ body {
       padding-bottom: 75%; /* 3/4 = 0.75 */
       width: 100%; /* Maintain 4:3 aspect ratio */
     }
-  }
-  
-  /* Override in active state */
-  .exercise-active .exercise-display {
-    height: 100%;
-    width: 100%;
-    padding-bottom: 0;
   }
 }
 
@@ -1030,131 +1011,4 @@ body {
     height: 100%;
     overflow: hidden;
   }
-}
-
-/* Fullscreen exercise background styles */
-.exercise-active #exerciseSection {
-  background-size: cover !important;
-  background-position: center center !important;
-  background-repeat: no-repeat !important;
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  max-width: none !important;
-  max-height: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  z-index: 0 !important;
-  overflow: hidden !important;
-}
-
-/* Hide the original image container when in active mode */
-.exercise-active .exercise-display {
-  display: none;
-}
-
-/* Style the content container for readability - MODIFIED (removed background) */
-.exercise-active .exercise-content-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 600px;
-  text-align: center;
-  background: transparent;
-  padding: 20px;
-  margin: 0 auto;
-  z-index: 10; /* Ensure content is above background image */
-}
-
-/* Ensure text is visible against background - MODIFIED (enhanced shadow) */
-.exercise-active #exerciseTitle,
-.exercise-active #exerciseSubtitle {
-  color: white;
-  text-shadow: none; /* Properly remove shadow */
-}
-
-/* Make sure controls are visible - MODIFIED (increased z-index) */
-.exercise-active .button-container {
-  z-index: 100; /* Higher z-index to ensure visibility */
-  position: fixed;
-  bottom: env(safe-area-inset-bottom);
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.3); /* Semi-transparent background for better visibility */
-}
-
-/* Mobile adjustments */
-@media (max-width: 480px) {
-  .exercise-active .exercise-content-container {
-    margin-top: 20vh;
-    max-width: 90%;
-  }
-}
-
-/* Small height screens */
-@media (max-height: 600px) {
-  .exercise-active .exercise-content-container {
-    margin-top: 15vh;
-  }
-}
-/* Add this to the end of your styles.css file */
-
-/* Fullscreen exercise background element */
-#exercise-fullscreen-bg {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  z-index: 0 !important;
-  background-size: cover !important;
-  background-position: center center !important;
-  background-repeat: no-repeat !important;
-}
-
-/* Make sure the exercise section is transparent */
-.exercise-active #exerciseSection {
-  background: transparent !important;
-  z-index: 1 !important;
-  position: relative !important;
-}
-
-/* Hide the display container when in active mode */
-.exercise-active .exercise-display {
-  display: none !important;
-}
-
-/* Ensure text is visible against the background without shadows */
-.exercise-active #exerciseTitle,
-.exercise-active #exerciseSubtitle {
-  color: white !important;
-  text-shadow: none !important;
-}
-
-/* Ensure buttons are visible above the background */
-.exercise-active .button-container, 
-.exercise-active .progress-container {
-  position: fixed !important;
-  z-index: 10 !important;
-  background: rgba(0, 0, 0, 0.3) !important;
-}
-
-/* Ensure exercise content is positioned correctly */
-.exercise-active .exercise-content-container {
-  position: relative !important;
-  z-index: 5 !important;
-  background: transparent !important;
-}
-
-/* Make the buttons only display when needed */
-.exercise-button {
-  display: none;
 }

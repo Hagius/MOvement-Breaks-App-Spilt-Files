@@ -70,14 +70,14 @@
       name: "Single-Leg Balance w/ Toe Taps",
       description: "Improve balance & ankle stability",
       unilateral: true,
-      image: "https://furthermore-cdn.equinox.com/2016/10/long-weekend-workout-warmup/warmup01.gif",
+      image: "https://images.ctfassets.net/drib7o8rcbyf/2YbdcRt7GzT1ZkLZ0336SY/f89b8a972eb647cf8feee85106fb848e/02-min.gif",
       probability: 1
     },
     {
       name: "Standing Hip Circles",
       description: "Loosen tight hips & improve joint mobility",
       unilateral: false,
-      image: "https://furthermore-cdn.equinox.com/2016/10/long-weekend-workout-warmup/warmup01.gif",
+      image: "https://furthermore-cdn.equinox.com/2016/10/long-weekend-workout-warmup/warmup02.gif",
       probability: 1
     },
     {
@@ -119,7 +119,7 @@
       name: "Standing Lateral Leg Raises",
       description: "Strengthen hip abductors & improve balance",
       unilateral: true,
-      image: "https://furthermore-cdn.equinox.com/2016/10/long-weekend-workout-warmup/warmup01.gif",
+      image: "https://images.ctfassets.net/drib7o8rcbyf/1AWNDkRP4J5Tpu7aZrrh2A/c5778130368c9fcf516a12de96591058/mobile.gif",
       probability: 1
     }
   ];
@@ -213,13 +213,13 @@
         document.body.classList.remove('landing-active');
       }
 
-		// Add exercise-active class to body when on exercise page, remove otherwise
+      // Add exercise-active class to body when on exercise page, remove otherwise
       if (pageId === 'exerciseSection') {
         document.body.classList.add('exercise-active');
       } else {
         document.body.classList.remove('exercise-active');
       }
-		
+      
       // Update button visibility based on current page
       updateButtonVisibility(pageId);
     },
@@ -283,41 +283,27 @@
       }
     }
   };
-  
-  // Function to update button visibility based on the current page
+
+  // Function to update button visibility based on the current page - SIMPLIFIED
   function updateButtonVisibility(pageId) {
     // Hide all buttons first
-    const landingButtons = document.querySelectorAll('.landing-button');
-    const timerButtons = document.querySelectorAll('.timer-button');
-    const exerciseButtons = document.querySelectorAll('.exercise-button');
-    const finishButtons = document.querySelectorAll('.finish-button');
-    
-    landingButtons.forEach(btn => btn.style.display = 'none');
-    timerButtons.forEach(btn => btn.style.display = 'none');
-    exerciseButtons.forEach(btn => btn.style.display = 'none');
-    finishButtons.forEach(btn => btn.style.display = 'none');
-    
-    // Hide progress containers
-    state.elements.timerProgressContainer.style.display = 'none';
-    state.elements.exerciseProgressContainer.style.display = 'none';
+    document.querySelectorAll('.bottom-button').forEach(btn => {
+      btn.style.display = 'none';
+    });
     
     // Show relevant buttons based on current page
-    switch(pageId) {
-      case 'landingPage':
-        landingButtons.forEach(btn => btn.style.display = 'block');
-        break;
-      case 'timerSection':
-        timerButtons.forEach(btn => btn.style.display = 'block');
-        state.elements.timerProgressContainer.style.display = 'block';
-        break;
-      case 'exerciseSection':
-        exerciseButtons.forEach(btn => btn.style.display = 'block');
-        state.elements.exerciseProgressContainer.style.display = 'block';
-        break;
-      case 'finishSection':
-        finishButtons.forEach(btn => btn.style.display = 'block');
-        break;
-    }
+    document.querySelectorAll(`.${pageId.replace('Section', '')}-button`).forEach(btn => {
+      btn.style.display = 'block';
+      // Remove any inline styles that might conflict
+      btn.style.visibility = '';
+      btn.style.opacity = '';
+    });
+    
+    // Handle progress containers
+    state.elements.timerProgressContainer.style.display = 
+      (pageId === 'timerSection') ? 'block' : 'none';
+    state.elements.exerciseProgressContainer.style.display = 
+      (pageId === 'exerciseSection') ? 'block' : 'none';
   }
   
   // EVENT HANDLERS
@@ -934,7 +920,7 @@
     }
   }
   
-  // FIXED: Complete function with all code properly enclosed
+  // UPDATED: Simplified Exercise Segment function
   function startExerciseSegment() {
     // Reset pause state
     state.isPaused = false;
@@ -964,24 +950,12 @@
     
     // Update UI
     const fullName = current.name + (current.side ? ` (${current.side})` : "");
-    state.elements.exerciseImage.src = current.image;
-    state.elements.exerciseImage.alt = fullName;
     state.elements.exerciseTitle.textContent = fullName;
     state.elements.exerciseSubtitle.textContent = current.description;
     
-    // Create or update a dedicated fullscreen background element
-    let bgElement = document.getElementById('exercise-fullscreen-bg');
-    if (!bgElement) {
-      bgElement = document.createElement('div');
-      bgElement.id = 'exercise-fullscreen-bg';
-      document.body.appendChild(bgElement);
-    }
-
-    // Set the background image
-    bgElement.style.backgroundImage = `url('${current.image}')`;
-    
-    // Also ensure the exercise section has a transparent background
-    state.elements.exerciseSection.style.background = 'transparent';
+    // Use body background instead of image element
+    document.body.style.backgroundImage = `url('${current.image}')`;
+    document.body.classList.add('exercise-background-active');
     
     // Set up timer
     state.exerciseRemaining = DEFAULTS.EXERCISE_DURATION;
@@ -1039,6 +1013,7 @@
     state.elements.exerciseRemaining.textContent = formattedTime;
   }
   
+  // UPDATED: Finishes exercises and cleans up background
   function finishExercises() {
     // Clear any intervals
     clearInterval(state.exerciseInterval);
@@ -1046,11 +1021,9 @@
     // Show completion vibration
     utils.triggerHaptic(HAPTIC_PATTERNS.sessionComplete);
     
-    // Remove the background element when finishing exercises
-    const bgElement = document.getElementById('exercise-fullscreen-bg');
-    if (bgElement) {
-      bgElement.remove();
-    }
+    // Remove background image
+    document.body.style.backgroundImage = '';
+    document.body.classList.remove('exercise-background-active');
     
     // Switch to finish page
     utils.showPage('finishSection');
